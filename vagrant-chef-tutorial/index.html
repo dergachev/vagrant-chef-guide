@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="css/reset.css" rel="stylesheet" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <link rel="shortcut icon" href="css/favicon.png" />
+    <link rel="apple-touch-icon" href="css/apple-touch-icon.png" />
+    <!-- Code Prettifier: -->
+<link href="css/highlight.css" type="text/css" rel="stylesheet" />
+<script type="text/javascript" src="js/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+    <link href="css/style.css" rel="stylesheet" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,800italic,300,400,800' rel='stylesheet' type='text/css'>    
+
+
+  </head>
+
+  <body>
+  <div class="fallback-message">
+  <p>Your browser <b>doesn't support the features required</b> by impress.js, so you are presented with a simplified version of this presentation.</p>
+  <p>For the best experience please use the latest <b>Chrome</b>, <b>Safari</b> or <b>Firefox</b> browser.</p>
+  </div>
+    <div id="impress">
+    <div class='step' >
+    
+<h1>Vagrant &amp; Chef</h1>
+<pre><code class='prettyprint '>         ... for Drupal developers
+</code></pre>
+<p><strong>Alex Dergachev</strong> | Co-founder of <a href="http://evolvingweb.ca">Evolving Web</a></p>
+
+<p><a href="https://github.com/dergachev">@dergachev</a> on github | <a href="https://twitter.com/dergachev">@dergachev</a> on twitter</p>
+</div>
+      <div class='step' >
+    
+<h1>Vagrant is...</h1>
+
+<ul>
+<li>A wrapper on VBoxManage,</li>
+<li>A workflow,</li>
+<li>A way of life.</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Installing Vagrant</h2>
+
+<p>Run these GUI installers:</p>
+
+<ul>
+<li><a href="https://www.virtualbox.org/wiki/Downloads">Download Virtualbox</a></li>
+<li><a href="http://downloads.vagrantup.com/">Download Vagrant</a></li>
+</ul>
+
+<p>Both are simple, reliable, and work on Windows/Mac/Linux</p>
+</div>
+      <div class='step' >
+    
+<h2>Vagrant Docs</h2>
+
+<ul>
+<li><a href="http://vagrantup.com">vagrantup.com</a></li>
+<li><a href="http://docs.vagrantup.com/v1/docs/">docs.vagrantup.com/v1/docs/</a></li>
+<li><a href="http://docs.vagrantup.com/v1/docs/getting-started">docs.vagrantup.com/v1/docs/getting-started</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Base boxes</h2>
+
+<p>Just a VM image with:</p>
+
+<ul>
+<li>&quot;vagrant&quot; user &amp; ssh keys</li>
+<li>virtualbox guest additions</li>
+<li>installed ruby, chef, puppet</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h3>Where to find base boxes</h3>
+
+<ul>
+<li>Community boxes from <a href="http://www.vagrantbox.es/">http://www.vagrantbox.es/</a> </li>
+<li>official builds have URLs like files.vagrantup.com/*.box</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h3>Base box docs</h3>
+
+<ul>
+<li>vagrantup.com doc on <a href="http://docs.vagrantup.com/v1/docs/base_boxes.html">base boxes</a></li>
+<li>Tutorial on <a href="https://github.com/fespinoza/checklist_and_guides/wiki/Creating-a-vagrant-base-box-for-ubuntu-12.04-32bit-server">manually building a base box</a></li>
+<li><a href="https://github.com/jedi4ever/vewee">Vewee</a> automates box creation.
+
+<ul>
+<li><a href="http://seletz.github.com/blog/2012/01/17/creating-vagrant-base-boxes-with-veewee/">veewee tutorial</a></li>
+</ul></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Vagrant workflow</h2>
+<pre><code class='prettyprint bash'>vagrant box add precise64
+  http://files.vagrantup.com/precise64.box
+vagrant init
+vagrant up # --no provision
+vagrant reload
+vagrant provision
+vagrant destroy --force && vagrant up
+vagrant ssh  # -p -- -l alex
+ls /vagrant # inside the VM
+vagrant package # outputs ./package.box
+vagrant snap take # requires vagrant-snap plugin
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Vagrantfile config</h2>
+<pre><code class='prettyprint ruby'>config.vm.forward_port 80, 4567
+config.vm.box = "precise64"
+config.vm.share_folder "foo", "/guest/path", 
+  "/host/path", :nfs => true
+config.vm.network :hostonly, "10.11.12.13"
+ # config.vm.network :bridged
+config.vm.customize 
+  ["modifyvm", :id, "--memory", 1024]
+config.vm.provision :shell, 
+  :inline => "echo foo > /vagrant/test"
+ # support for multiple VMs
+</code></pre></div>
+      <div class='step' >
+    
+<h1>Provisioning</h1>
+
+<p>Installing software on the VM</p>
+</div>
+      <div class='step' >
+    
+<h2>Supported provisioners</h2>
+
+<ul>
+<li>shell</li>
+<li>chef-solo</li>
+<li>chef</li>
+<li>Puppet</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Shell provisioner</h2>
+<pre><code class='prettyprint ruby'>config.vm.provision :shell, 
+  :inline => "apt-get -y update"
+
+config.vm.provision :shell, 
+  :inline => "sudo apt-get -y vim git"
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Chef-solo provisioner</h2>
+<pre><code class='prettyprint ruby'>config.vm.provision :chef_solo do |chef|
+  chef.cookbooks_path = 
+    ["cookbooks", "~/company/cookbooks"]
+  chef.add_recipe("apache")
+  chef.add_recipe("php")
+  chef.json = {
+    :load_limit => 42,
+    :chunky_bacon => true
+  }
+end
+</code></pre>
+<p>See <a href="http://docs.vagrantup.com/v1/docs/provisioners/chef_solo.html">Vagrant chef_solo docs</a> and <a href="http://fnichol.github.com/iterative_chef/">iterative chef</a> tutorial.</p>
+</div>
+      <div class='step' >
+    
+<h1>Ruby for Chef</h1>
+
+<p>Just enough not to freak out</p>
+</div>
+      <div class='step' >
+    
+<h2>Methods</h2>
+<pre><code class='prettyprint ruby'>def double(num)
+  num * 2
+end
+
+double 33 # => 66
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Ruby Strings</h2>
+<pre><code class='prettyprint ruby'>:bob == 'bob'.to_sym
+
+%w{git vim mysql} == ['git', 'vim', 'mysql']
+
+"head #{var} tail" == "head "+var+" tail"
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Ruby dictionaries</h2>
+<pre><code class='prettyprint ruby'>options = {
+  :deploy_drupal => { 
+    :apache_group => 'vagrant', 
+    :sql_load_file => '/vagrant/db/fga.sql.gz',
+    :source =>  "/vagrant/public/fga/www",
+  },
+  :mysql => {
+    :server_root_password => "root",
+  },
+}
+</code></pre></div>
+      <div class='step' >
+    
+<h2>DSL... wtf?</h2>
+<pre><code class='prettyprint ruby'>template "/etc/mysql/grants.sql" do
+  source "grants.sql.erb"
+  owner "root"
+  group "root"
+end
+</code></pre><pre><code class='prettyprint javascript'>template("/etc/mysql/grants.sql", function() {  
+  this.source("grants.sql.erb");
+  this.owner("root");
+  this.group("root");
+});
+</code></pre></div>
+      <div class='step' >
+    
+<h1>Writing a cookbook</h1>
+</div>
+      <div class='step' >
+    
+<h2>Cookbooks and recipes</h2>
+
+<p>A <strong>cookbooks</strong> contains <strong>recipes</strong>, which are <em>very simple</em> ruby scripts that install software or otherwise configure the VM. </p>
+
+<p>Recipes read data from <strong>attributes</strong>, and call built-in or custom <strong>resources</strong>, which are helper methods that do all the work. </p>
+</div>
+      <div class='step' >
+    
+<h2>Cookbook structure</h2>
+
+<p><img src="http://dl-web.dropbox.com/u/29440342/screenshots/APTIAH-2013.2.22-16.51.png" alt=""></p>
+</div>
+      <div class='step' >
+    
+<h2>Example Cookbook</h2>
+
+<p>Adapted from <a href="https://github.com/opscode-cookbooks/getting-started">@opscode/getting-started</a>:</p>
+
+<ul>
+<li><em>recipes/</em>
+
+<ul>
+<li>default.rb</li>
+<li>other_recipe.rb</li>
+</ul></li>
+<li><em>attributes/</em>
+
+<ul>
+<li>default.rb</li>
+</ul></li>
+<li><em>templates/</em>
+
+<ul>
+<li>httpd.conf.erb</li>
+</ul></li>
+<li>metadata.rb</li>
+<li>README.md</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Resources</h2>
+
+<ul>
+<li><strong>Recipes</strong> are ruby scripts, but with minimal code.</li>
+<li>Recipes specify which system configuration <strong>Resources</strong> chef should execute</li>
+<li>Resource implementations (called <strong>Providers</strong>) actually do the work.</li>
+<li>Simplifying, recipes contain &quot;API calls&quot; to resources, with optional arguments.</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Install a template</h2>
+<pre><code class='prettyprint '>template '/var/www/sites/default/settings.php' do
+  # action :create
+  # action :create_if_missing
+  source "settings.php.erb"
+  variables ( {
+    :user => 'root',
+    :pass => node[:mysql]['root_password'],
+    :name => 'drupalsite_v1',
+  })
+end
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Install packages</h2>
+<pre><code class='prettyprint '>package "tar" do
+  action :install
+end
+
+package %w{vim git}
+
+php_pear "uploadprogress"
+
+gem_package "syntax"
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Execute bash</h2>
+<pre><code class='prettyprint '>execute "download drupal" do
+  cwd '/var/www'
+  command "drush dl drupal-7.20"
+  creates '/var/www/drupal-7.20/index.php'
+end
+</code></pre>
+<p><strong>creates</strong> tells chef not to re-execute the resource if index.php is already in place.</p>
+</div>
+      <div class='step' >
+    
+<h2>Deploy from git</h2>
+<pre><code class='prettyprint '>deploy "/var/www" do 
+  repo "git@github.com/mycompany/project"
+  user "www-data"
+  group "www-data"
+  revision "master"
+  action :sync # default value, also :checkout
+end
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Controlling services</h2>
+<pre><code class='prettyprint '> # runs /etc/init.d/apache2 start|stop|...
+service "apache2" do
+  supports :status => true, 
+    :restart => true, :reload => true
+  action [ :enable, :start ]
+end
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Install a user</h2>
+<pre><code class='prettyprint '>user "sam" do
+     home "/home/sam"
+     shell "/bin/zsh"
+     comment "Sam loves DevOps"
+     action :create
+     password :$1$pfFfDG3M$22vsMsPnn93ZnuodI86Ec0
+end
+</code></pre></div>
+      <div class='step' >
+    
+<h2>Add a vhost config</h2>
+<pre><code class='prettyprint ruby'>web_app 'drupalcampottawa' do
+  template "web_app.conf.erb"
+  port 80
+  server_name 'drupalcampottawa.com'
+  docroot '/var/www/dcampottawa'
+  notifies :restart, 
+    resources("service[apache2]"), 
+    :delayed
+end
+</code></pre>
+<p><strong>web_app</strong> is custom resource defined in the apache2 cookbook</p>
+</div>
+      <div class='step' >
+    
+<h2>More about recipes and resources</h2>
+
+<ul>
+<li><a href="http://docs.opscode.com/chef/resources.html">docs.opscode.com/chef/resources.html</a> (READ ALL OF THIS)</li>
+<li><a href="http://wiki.opscode.com/display/chef/Chef+Basics">wiki.opscode.com/display/chef/Chef+Basics</a></li>
+<li><a href="http://docs.opscode.com/essentials_cookbooks.html">docs.opscode.com/essentials_cookbooks.html</a></li>
+<li><a href="http://wiki.opscode.com/display/chef/Resources+and+Providers">wiki.opscode.com/display/chef/Resources+and+Providers</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h1>Additional stuff</h1>
+
+<p>Useful tools and extensions to Vagrant and Chef.</p>
+</div>
+      <div class='step' >
+    
+<h2>Testing</h2>
+
+<ul>
+<li><a href="https://travis-ci.org">Travis</a></li>
+<li><a href="http://acrmp.github.com/foodcritic/">Food critic</a></li>
+<li><a href="https://github.com/calavera/minitest-chef-handler">Minitest</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Cookbook managers</h2>
+
+<p>These tools automatically download dependent cookbooks:</p>
+
+<ul>
+<li><a href="https://github.com/applicationsonline/librarian">Librarian</a></li>
+<li><a href="http://berkshelf.com/">Berkshelf</a></li>
+</ul>
+
+<p>See this <a href="http://vialstudios.com/guide-authoring-cookbooks.html">berkshelf tutorial</a></p>
+</div>
+      <div class='step' >
+    
+<h2>Vagrant Plugins</h2>
+
+<ul>
+<li>Build your own base boxes: <a href="https://github.com/jedi4ever/veewee">@jedi4ever/veewee</a></li>
+<li>Manage virtualbox snapshots: <a href="https://github.com/jedi4ever/sahara">@jedi4ever/sahara</a> and <a href="https://github.com/t9md/vagrant-snap">@t9md/vagrant-snap</a></li>
+<li><a href="https://github.com/mosaicxm/vagrant-hostmaster">@mosaicxm/vagrant-hostmaster</a> for managing /etc/hosts</li>
+<li>List of <a href="https://github.com/mitchellh/vagrant/wiki/Available-Vagrant-Plugins">Vagrant Plugins</a></li>
+<li>Docs on <a href="http://docs.vagrantup.com/v1/docs/extending/">writing Vagrant plugins</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>More Vagrant info</h2>
+
+<ul>
+<li><a href="https://github.com/mitchellh/vagrant">@mitchellh/vagrant</a></li>
+<li><a href="http://docs.vagrantup.com/v1/docs">Vagrant Docs</a></li>
+<li>IRC: <a href="http://irc.lc/freenode/vagrant">#vagrant on freenode</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Chef-server</h2>
+
+<ul>
+<li><a href="http://community.opscode.com/">Open-source tool</a> to manage the state of all your servers that are provisioned by chef-solo.</li>
+<li>developed by Opscode, who offer a <a href="http://www.opscode.com/hosted-chef/">hosted version</a>.</li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>Chef links</h2>
+
+<ul>
+<li><a href="http://wiki.opscode.com/display/chef/Home">http://wiki.opscode.com/display/chef/Home</a></li>
+<li><a href="http://docs.opscode.com/">http://docs.opscode.com/</a></li>
+<li><a href="http://chefconf.opscode.com/">#ChefConf 2013</a> April 24-26 SFO</li>
+<li><a href="http://jtimberman.housepub.org/">jtimperman&#39;s blog</a> with advanced chef tips</li>
+<li>IRC: <a href="http://irc.lc/freenode/chef">#chef on freenode</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h2>My vagrant/chef contribs</h2>
+</div>
+      <div class='step' >
+    
+<h3>Drupal and Redmine</h3>
+
+<ul>
+<li><a href="https://github.com/dergachev/vagrant_drupal">@dergachev/vagrant_drupal</a> - work in progress</li>
+<li><a href="https://github.com/dergachev/chef_redmine">@dergachev/chef-redmine</a> cookbook</li>
+<li><a href="https://github.com/dergachev/vagrant_redmine">@dergachev/vagrant_redmine</a> tutorial; see extensive <a href="https://github.com/dergachev/vagrant_redmine/blob/master/NOTES.md">NOTES.md</a></li>
+</ul>
+</div>
+      <div class='step' >
+    
+<h3>User provisioning with agent forwarding</h3>
+
+<ul>
+<li><a href="https://gist.github.com/3866825#vagrant-tutorial">https://gist.github.com/3866825#vagrant-tutorial</a></li>
+<li>LWRP tutorial: <a href="https://github.com/dergachev/chef_extend_lwrp">@dergachev/chef_extend_lwrp</a></li>
+<li><a href="https://github.com/dergachev/chef_root_ssh_agent">@dergachev/chef_root_ssh_agent</a> </li>
+<li><a href="https://github.com/dergachev/chef_users">@dergachev/chef_users</a></li>
+<li><a href="https://github.com/dergachev/chef_homesick_agent">@dergachev/chef_homesick_agent</a>, extends <a href="https://github.com/fnichol/chef-homesick">@fnichol/chef-homesick</a></li>
+</ul>
+
+      </div>
+    <script src="js/impress.js"></script>
+    <script>impress().init();</script>
+  </body>
+</html>
+    

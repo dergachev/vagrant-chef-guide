@@ -1,0 +1,589 @@
+<!DOCTYPE html><html><head>
+<title>intro-to-vagrant.md</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=1024, user-scalable=no">
+
+<!-- Required stylesheet -->
+<link rel="stylesheet" href="resources/deck.js/core/deck.core.css">
+
+<!-- Extension CSS files go here. Remove or add as needed. -->
+<link rel="stylesheet" href="resources/deck.js/extensions/goto/deck.goto.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/menu/deck.menu.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/navigation/deck.navigation.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/status/deck.status.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/hash/deck.hash.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/scale/deck.scale.css">
+<!-- Style theme. More available in /themes/style/ or create your own. -->
+<link rel="stylesheet" href="resources/amir-deck.css">
+
+<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+<link rel="stylesheet" href="resources/deck.js/themes/transition/vertical-slide.css">
+
+<!-- Required Modernizr file -->
+<script src="resources/deck.js/modernizr.custom.js"></script>
+
+<!-- Roboto Slab typeface -->
+<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:300,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+<!-- Google Code Prettify -->
+<link rel="stylesheet" href="resources/google-code-prettify/styles/desert.css">
+</head><body class='deck-container'><section class='slide'>
+<h2 style="margin:100px auto;font-size:2.2em; font-weight:bold;">
+  Intro to Vagrant
+</h2>
+
+<div style="position: absolute; width:900px; bottom:4em;right:3em;">
+  <code style=" font-size:0.7em;">
+    <div style="font-size:1.2em; font-weight:bold;">Alex Dergachev</div>
+    <div> alex@evolvingweb.ca </div>
+    <div> github.com/dergachev </div>
+    <div> twitter.com/dergachev </div>
+  </code>
+</div>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Vagrant is...</h3>
+
+<ul>
+<li>A wrapper on VBoxManage,</li>
+<li>A workflow,</li>
+<li>A way of life.</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Installing Vagrant</h3>
+
+<p>Run these GUI installers:</p>
+
+<ul>
+<li><a href="https://www.virtualbox.org/wiki/Downloads">Download Virtualbox</a></li>
+<li><a href="http://downloads.vagrantup.com/">Download Vagrant</a></li>
+</ul>
+
+<p>Both are simple, reliable, and work on Windows/Mac/Linux</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Vagrant Docs</h3>
+
+<ul>
+<li><a href="http://vagrantup.com">vagrantup.com</a></li>
+<li><a href="http://docs.vagrantup.com/v2/docs/">docs.vagrantup.com/v2/</a></li>
+<li><a href="http://docs.vagrantup.com/v2/getting-started">docs.vagrantup.com/v2/docs/getting-started</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Base boxes</h3>
+
+<p>Just a VM image with:</p>
+
+<ul>
+<li>"vagrant" user &amp; ssh keys</li>
+<li>virtualbox guest additions</li>
+<li>installed ruby, chef, puppet</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h4>Where to find base boxes</h4>
+
+<ul>
+<li>Community boxes from http://www.vagrantbox.es/ </li>
+<li>official builds have URLs like files.vagrantup.com/*.box</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h4>Base box docs</h4>
+
+<ul>
+<li>vagrantup.com doc on <a href="http://docs.vagrantup.com/v1/docs/base_boxes.html">base boxes</a></li>
+<li>Tutorial on <a href="https://github.com/fespinoza/checklist_and_guides/wiki/Creating-a-vagrant-base-box-for-ubuntu-12.04-32bit-server">manually building a base box</a></li>
+<li><a href="http://www.packer.io/">Packer</a> automates box creation</li>
+<li><a href="https://github.com/jedi4ever/vewee">Vewee</a> automates box creation.
+<ul>
+<li><a href="http://seletz.github.com/blog/2012/01/17/creating-vagrant-base-boxes-with-veewee/">veewee tutorial</a></li>
+</ul></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Vagrant workflow</h3>
+
+<pre class="prettyprint"><code>#ruby
+vagrant box add precise64
+  http://files.vagrantup.com/precise64.box
+vagrant init
+vagrant up # --no provision
+vagrant reload
+vagrant provision
+vagrant destroy --force &amp;&amp; vagrant up
+vagrant ssh  # -p -- -l alex
+ls /vagrant # inside the VM
+vagrant package # outputs ./package.box
+vagrant snap take # requires vagrant-snap plugin
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Vagrantfile config</h3>
+
+<pre class="prettyprint"><code>#ruby
+config.vm.forward_port 80, 4567
+config.vm.box = "precise64"
+config.vm.share_folder "foo", "/guest/path", 
+  "/host/path", :nfs =&gt; true
+config.vm.network :hostonly, "10.11.12.13"
+ # config.vm.network :bridged
+config.vm.customize 
+  ["modifyvm", :id, "--memory", 1024]
+config.vm.provision :shell, 
+  :inline =&gt; "echo foo &gt; /vagrant/test"
+ # support for multiple VMs
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h2>Provisioning</h2>
+
+<p>Installing software on the VM</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Supported provisioners</h3>
+
+<ul>
+<li>shell</li>
+<li>chef-solo</li>
+<li>chef</li>
+<li>Puppet</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Shell provisioner</h3>
+
+<pre class="prettyprint"><code>#ruby
+config.vm.provision :shell, 
+  :inline =&gt; "apt-get -y update"
+
+config.vm.provision :shell, 
+  :inline =&gt; "sudo apt-get -y vim git"
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Chef-solo provisioner</h3>
+
+<pre class="prettyprint"><code>#ruby
+config.vm.provision :chef_solo do |chef|
+  chef.cookbooks_path = 
+    ["cookbooks", "~/company/cookbooks"]
+  chef.add_recipe("apache")
+  chef.add_recipe("php")
+  chef.json = {
+    :load_limit =&gt; 42,
+    :chunky_bacon =&gt; true
+  }
+end
+</code></pre>
+
+<p>See <a href="http://docs.vagrantup.com/v1/docs/provisioners/chef_solo.html">Vagrant chef_solo docs</a> and <a href="http://fnichol.github.com/iterative_chef/">iterative chef</a> tutorial.</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h2>Ruby for Chef and Vagrant</h2>
+
+<p>Just enough not to freak out</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Methods</h3>
+
+<pre class="prettyprint"><code>#ruby
+def double(num)
+  num * 2
+end
+
+double 33 # =&gt; 66
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Ruby Strings</h3>
+
+<pre class="prettyprint"><code>#ruby
+:bob == 'bob'.to_sym
+
+%w{git vim mysql} == ['git', 'vim', 'mysql']
+
+"head #{var} tail" == "head "+var+" tail"
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Ruby dictionaries</h3>
+
+<pre class="prettyprint"><code>#ruby
+options = {
+  :deploy_drupal =&gt; { 
+    :apache_group =&gt; 'vagrant', 
+    :sql_load_file =&gt; '/vagrant/db/fga.sql.gz',
+    :source =&gt;  "/vagrant/public/fga/www",
+  },
+  :mysql =&gt; {
+    :server_root_password =&gt; "root",
+  },
+}
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>DSL... wtf?</h3>
+
+<pre class="prettyprint"><code>#ruby
+template "/etc/mysql/grants.sql" do
+  source "grants.sql.erb"
+  owner "root"
+  group "root"
+end
+
+
+#javascript
+template("/etc/mysql/grants.sql", function() {  
+  this.source("grants.sql.erb");
+  this.owner("root");
+  this.group("root");
+});
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h2>Writing a cookbook</h2>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Cookbooks and recipes</h3>
+
+<p>A <strong>cookbooks</strong> contains <strong>recipes</strong>, which are <em>very simple</em> ruby scripts that install software or otherwise configure the VM. </p>
+
+<p>Recipes read data from <strong>attributes</strong>, and call built-in or custom <strong>resources</strong>, which are helper methods that do all the work. </p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Cookbook structure</h3>
+
+<p><img src="http://dl-web.dropbox.com/u/29440342/screenshots/APTIAH-2013.2.22-16.51.png" alt="" title="" /></p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Example Cookbook</h3>
+
+<p>Adapted from <a href="https://github.com/opscode-cookbooks/getting-started">@opscode/getting-started</a>:</p>
+
+<ul>
+<li><em>recipes/</em>
+<ul>
+<li>default.rb</li>
+<li>other_recipe.rb</li>
+</ul></li>
+<li><em>attributes/</em>
+<ul>
+<li>default.rb</li>
+</ul></li>
+<li><em>templates/</em>
+<ul>
+<li>httpd.conf.erb</li>
+</ul></li>
+<li>metadata.rb</li>
+<li>README.md</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Resources</h3>
+
+<ul>
+<li><strong>Recipes</strong> are ruby scripts, but with minimal code.</li>
+<li>Recipes specify which system configuration <strong>Resources</strong> chef should execute</li>
+<li>Resource implementations (called <strong>Providers</strong>) actually do the work.</li>
+<li>Simplifying, recipes contain "API calls" to resources, with optional arguments.</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Install a template</h3>
+
+<pre class="prettyprint"><code>#ruby
+template '/var/www/sites/default/settings.php' do
+  # action :create
+  # action :create_if_missing
+  source "settings.php.erb"
+  variables ( {
+    :user =&gt; 'root',
+    :pass =&gt; node[:mysql]['root_password'],
+    :name =&gt; 'drupalsite_v1',
+  })
+end
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Install packages</h3>
+
+<pre class="prettyprint"><code>#ruby
+package "tar" do
+  action :install
+end
+
+package %w{vim git}
+
+php_pear "uploadprogress"
+
+gem_package "syntax"
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Execute bash</h3>
+
+<pre class="prettyprint"><code>#ruby 
+execute "download drupal" do
+  cwd '/var/www'
+  command "drush dl drupal-7.20"
+  creates '/var/www/drupal-7.20/index.php'
+end
+</code></pre>
+
+<p><strong>creates</strong> tells chef not to re-execute the resource if index.php is already in place.</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Deploy from git</h3>
+
+<pre class="prettyprint"><code>#ruby
+deploy "/var/www" do 
+  repo "git@github.com/mycompany/project"
+  user "www-data"
+  group "www-data"
+  revision "master"
+  action :sync # default value, also :checkout
+end
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Controlling services</h3>
+
+<pre class="prettyprint"><code>#ruby
+# runs /etc/init.d/apache2 start|stop|...
+service "apache2" do
+  supports :status =&gt; true, 
+    :restart =&gt; true, :reload =&gt; true
+  action [ :enable, :start ]
+end
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Install a user</h3>
+
+<pre class="prettyprint"><code>#ruby
+user "sam" do
+     home "/home/sam"
+     shell "/bin/zsh"
+     comment "Sam loves DevOps"
+     action :create
+     password :$1$pfFfDG3M$22vsMsPnn93ZnuodI86Ec0
+end
+</code></pre>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Add a vhost config</h3>
+
+<pre class="prettyprint"><code>#ruby
+web_app 'drupalcampottawa' do
+  template "web_app.conf.erb"
+  port 80
+  server_name 'drupalcampottawa.com'
+  docroot '/var/www/dcampottawa'
+  notifies :restart, 
+    resources("service[apache2]"), 
+    :delayed
+end
+</code></pre>
+
+<p><strong>web_app</strong> is custom resource defined in the apache2 cookbook</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Example recipe</h3>
+
+<p>Putting it all together, you should be able to understand this <a href="https://github.com/fespinoza/checklist_and_guides/blob/master/chef%20solo%20guide/cookbooks/main/recipes/default.rb">example recipe</a></p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>More about recipes and resources</h3>
+
+<ul>
+<li><a href="http://docs.opscode.com/chef/resources.html">docs.opscode.com/chef/resources.html</a> (READ ALL OF THIS)</li>
+<li><a href="http://wiki.opscode.com/display/chef/Chef+Basics">wiki.opscode.com/display/chef/Chef+Basics</a></li>
+<li><a href="http://docs.opscode.com/essentials_cookbooks.html">docs.opscode.com/essentials_cookbooks.html</a></li>
+<li><a href="http://wiki.opscode.com/display/chef/Resources+and+Providers">wiki.opscode.com/display/chef/Resources+and+Providers</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h2>Additional stuff</h2>
+
+<p>Useful tools and extensions to Vagrant and Chef.</p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Testing</h3>
+
+<ul>
+<li><a href="https://travis-ci.org">Travis</a></li>
+<li><a href="http://acrmp.github.com/foodcritic/">Food critic</a></li>
+<li><a href="https://github.com/calavera/minitest-chef-handler">Minitest</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Cookbook managers</h3>
+
+<p>These tools automatically download dependent cookbooks:</p>
+
+<ul>
+<li><a href="https://github.com/applicationsonline/librarian">Librarian</a></li>
+<li><a href="http://berkshelf.com/">Berkshelf</a></li>
+</ul>
+
+<p>See this <a href="http://vialstudios.com/guide-authoring-cookbooks.html">berkshelf tutorial</a></p>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Vagrant Plugins</h3>
+
+<ul>
+<li>Build your own base boxes: <a href="https://github.com/jedi4ever/veewee">@jedi4ever/veewee</a></li>
+<li>Manage virtualbox snapshots: <a href="https://github.com/jedi4ever/sahara">@jedi4ever/sahara</a> and <a href="https://github.com/t9md/vagrant-snap">@t9md/vagrant-snap</a></li>
+<li><a href="https://github.com/mosaicxm/vagrant-hostmaster">@mosaicxm/vagrant-hostmaster</a> for managing /etc/hosts</li>
+<li>List of <a href="https://github.com/mitchellh/vagrant/wiki/Available-Vagrant-Plugins">Vagrant Plugins</a></li>
+<li>Docs on <a href="http://docs.vagrantup.com/v1/docs/extending/">writing Vagrant plugins</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>More Vagrant info</h3>
+
+<ul>
+<li><a href="https://github.com/mitchellh/vagrant">@mitchellh/vagrant</a></li>
+<li><a href="http://docs.vagrantup.com/v1/docs">Vagrant Docs</a></li>
+<li>IRC: <a href="http://irc.lc/freenode/vagrant">#vagrant on freenode</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Chef-server</h3>
+
+<ul>
+<li><a href="http://community.opscode.com/">Open-source tool</a> to manage the state of all your servers that are provisioned by chef-solo.</li>
+<li>developed by Opscode, who offer a <a href="http://www.opscode.com/hosted-chef/">hosted version</a>.</li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>Chef links</h3>
+
+<ul>
+<li>http://wiki.opscode.com/display/chef/Home</li>
+<li>http://docs.opscode.com/</li>
+<li><a href="http://chefconf.opscode.com/">#ChefConf 2013</a> April 24-26 SFO</li>
+<li><a href="http://jtimberman.housepub.org/">jtimperman's blog</a> with advanced chef tips</li>
+<li>IRC: <a href="http://irc.lc/freenode/chef">#chef on freenode</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h3>My vagrant/chef contribs</h3>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h4>Drupal and Redmine</h4>
+
+<ul>
+<li><a href="https://github.com/dergachev/vagrant_drupal">@dergachev/vagrant_drupal</a> - work in progress</li>
+<li><a href="https://github.com/dergachev/chef_redmine">@dergachev/chef-redmine</a> cookbook</li>
+<li><a href="https://github.com/dergachev/vagrant_redmine">@dergachev/vagrant_redmine</a> tutorial; see extensive <a href="https://github.com/dergachev/vagrant_redmine/blob/master/NOTES.md">NOTES.md</a></li>
+</ul>
+
+<div style='position:absolute;width:500px;bottom:0;right:1em;'><img src='resources/img/ew-good.png' width='200px' style='float:right;'/></div></section><section class='slide'>
+
+<h4>User provisioning with agent forwarding</h4>
+
+<ul>
+<li>https://gist.github.com/3866825#vagrant-tutorial</li>
+<li>LWRP tutorial: <a href="https://github.com/dergachev/chef_extend_lwrp">@dergachev/chef_extend_lwrp</a></li>
+<li><a href="https://github.com/dergachev/chef_root_ssh_agent">@dergachev/chef_root_ssh_agent</a> </li>
+<li><a href="https://github.com/dergachev/chef_users">@dergachev/chef_users</a></li>
+<li><a href="https://github.com/dergachev/chef_homesick_agent">@dergachev/chef_homesick_agent</a>, extends <a href="https://github.com/fnichol/chef-homesick">@fnichol/chef-homesick</a></li>
+</ul>
+</section>
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="resources/#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="resources/#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="resources/." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="resources/deck.js/jquery-1.7.2.min.js"></script>
+<script src="resources/deck.js/core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="resources/deck.js/core/deck.core.js"></script>
+<script src="resources/deck.js/extensions/hash/deck.hash.js"></script>
+<script src="resources/deck.js/extensions/menu/deck.menu.js"></script>
+<script src="resources/deck.js/extensions/goto/deck.goto.js"></script>
+<script src="resources/deck.js/extensions/status/deck.status.js"></script>
+<script src="resources/deck.js/extensions/navigation/deck.navigation.js"></script>
+<script src="resources/deck.js/extensions/scale/deck.scale.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+<script src="resources/google-code-prettify/src/run_prettify.js"></script>
+</body></html>

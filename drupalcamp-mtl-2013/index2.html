@@ -1,0 +1,583 @@
+<!DOCTYPE html><html><head>
+<title>intro.md</title>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport" content="width=1024, user-scalable=no">
+
+<!-- Required stylesheet -->
+<link rel="stylesheet" href="resources/deck.js/core/deck.core.css">
+
+<!-- Extension CSS files go here. Remove or add as needed. -->
+<link rel="stylesheet" href="resources/deck.js/extensions/goto/deck.goto.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/menu/deck.menu.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/navigation/deck.navigation.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/status/deck.status.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/hash/deck.hash.css">
+<link rel="stylesheet" href="resources/deck.js/extensions/scale/deck.scale.css">
+<!-- Style theme. More available in /themes/style/ or create your own. -->
+<link rel="stylesheet" href="resources/amir-deck.css">
+
+<!-- Transition theme. More available in /themes/transition/ or create your own. -->
+<link rel="stylesheet" href="resources/deck.js/themes/transition/vertical-slide.css">
+
+<!-- Required Modernizr file -->
+<script src="resources/deck.js/modernizr.custom.js"></script>
+
+<!-- Roboto Slab typeface -->
+<link href='http://fonts.googleapis.com/css?family=Roboto+Slab:300,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Cardo:400,400italic,700' rel='stylesheet' type='text/css'>
+<link href='http://fonts.googleapis.com/css?family=Source+Code+Pro' rel='stylesheet' type='text/css'>
+<!-- Google Code Prettify -->
+<link rel="stylesheet" href="resources/google-code-prettify/styles/desert.css">
+</head><body class='deck-container'><section class='slide'>
+<h2 style="margin:100px auto;font-size:2.2em; font-weight:bold;">
+  Cooking Drupal with Chef
+</h2>
+
+<div style="position: absolute; width:900px; bottom:1em;right:1em;">
+  <img src="resources/img/ew-good.png" style="height:130px; float:right;">
+  <code style="float:right; font-size:0.7em;">
+    <div style="font-size:1.2em; font-weight:bold;">Amir Kadivar </div>
+    <div> amir@evolvingweb.ca </div>
+    <div> github.com/amirkdv </div>
+  </code>
+</div>
+
+<p>n--end--n</p>
+
+<h2>Outline</h2>
+
+<ul>
+<li class="slide">Automated Infrastructure: Problem Definition </li>
+<li class="slide">Virtualization</li>
+<li class="slide">Configuration Management</li>
+<li class="slide">Chef</li>
+<li class="slide">Chef for Drupal</li>
+</ul>
+
+<p>n--end--n</p>
+
+<h2>Problem Definition</h2>
+
+<h3>development environments</h3>
+
+<ul>
+<li class="slide">consistency (with production and other devs)</li>
+<li class="slide">choice of tools (limiting developers)</li>
+<li class="slide">multiple platforms</li>
+</ul>
+
+<h3>testing and integration</h3>
+
+<ul>
+<li class="slide">is every commit tested?</li>
+<li class="slide">test environment (testing a web application leaves a lot of cruft)</li>
+</ul>
+
+<h3>deployment</h3>
+
+<ul>
+<li class="slide">how do you go from zero to live site?</li>
+<li class="slide">how frequent are changes pushed to production?</li>
+</ul>
+
+<p>n--end--n</p>
+
+<h2>Enters Virtualization</h2>
+
+<ul>
+<li class="slide">processes sharing hardware → O/S s sharing hardware</li>
+<li class="slide">A VM is an <em>environment</em> that a VM Monitor creates</li>
+<li class="slide">These <em>environments</em> should, ideally, be:
+<ul>
+<li class="slide">isolated from each other</li>
+<li class="slide">equivalent to a real machine</li>
+<li class="slide">as efficient as a real machine</li>
+</ul></li>
+<li class="slide">We have achieved all of these!
+n--end--n</li>
+</ul>
+
+<h2>Virtualization Technologies</h2>
+
+<ul>
+<li class="slide">Types of VM Monitors</li>
+<li class="slide">Methods of Virtualization</li>
+<li class="slide">why is <img src="resources/img/vagrant-w-name.png" style="display:inline; vertical-align:middle;" height="100px;"/> relevant?</li>
+</ul>
+
+<p>n--end--n</p>
+
+<h2>How does Virtualization Help?</h2>
+
+<!-- * VMs are cheap to build and to throw away! -->
+
+<h3>development:</h3>
+
+<ul>
+<li class="slide">VM for every project</li>
+<li class="slide">VM for each developer</li>
+</ul>
+
+<h3>testing &amp; integration:</h3>
+
+<ul>
+<li class="slide">spin up throwaway VM for tests, as frequently as you wish</li>
+</ul>
+
+<h3>deployment:</h3>
+
+<ul>
+<li class="slide">crufty prod? start from fresh VM</li>
+<li class="slide">switch platform? start from fresh VM</li>
+</ul>
+
+<p>n--end--n</p>
+
+<h2>Missing Piece: Provisioning</h2>
+
+<h3>VMs are cheap but:</h3>
+
+<ul>
+<li class="slide">how much work is it to configure a VM from <em>scratch</em>?</li>
+<li class="slide"><div style="font-size:0.9em;">
+how much of this work is reusable for a similar
+<em>but not identical</em> use case?</div></li>
+<li class="slide"><div style="font-size:0.9em;">
+how do you maintain <em>consistent</em> configuration
+accross different machines?
+</div></li>
+</ul>
+
+<p>n--end--n</p>
+
+<h2>Config Management tools</h2>
+
+<ul>
+<li class="slide">Config described in a programming (instead of human) language:
+<ul>
+<li class="slide">version control</li>
+<li class="slide">reusable</li>
+</ul></li>
+<li class="slide">High level programming language instead of shell scripts
+<ul>
+<li class="slide">cross-platform configuration</li>
+<li class="slide">more readable/maintainable</li>
+</ul></li>
+</ul>
+
+<p>n--end--n</p>
+
+<h3><img src="resources/img/chef.png" width="400px"/></h3>
+
+<ul>
+<li class="slide">What is it exactly?</li>
+<li class="slide">Concepts:
+<ul>
+<li class="slide">State</li>
+<li class="slide">Resources</li>
+<li class="slide">Idempotence
+n--end--n</li>
+</ul></li>
+</ul>
+
+<h2>How does <img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/> work?</h2>
+
+<ul>
+<li class="slide">Recipes and Cookbooks</li>
+<li class="slide">Run Lists</li>
+<li class="slide">Attributes</li>
+<li class="slide">Assets: Files and Templates</li>
+<li class="slide">Nodes and C/S Chef
+n--end--n</li>
+</ul>
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code>#ruby
+# a function
+def double (x)
+  return 2*x
+end 
+
+puts double 12 # =&gt; 24
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code>#ruby 
+if File.exists? '/foo/bar.php'
+  puts "found it"
+end
+
+puts "found it" if File.exists? 'foo'
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2>Ruby</h2>
+
+<pre class="prettyprint"><code>#ruby
+['John','Mary', 'Bob'].each do |guest|
+  puts 'Pleased to meet you #{guest}!'
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2><img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Resources</h2>
+
+<pre class="prettyprint"><code>#ruby
+directory "/path/to/some/directory" do
+  owner "user1"
+  group "group1"
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2><img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Resources</h2>
+
+<pre class="prettyprint"><code>#ruby
+execute "some-task" do
+  cwd "/path/to/some/directory"
+  command "command --with-some options"
+  creates "/path/to/some/file"
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2><img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>an idempotent resource</h2>
+
+<pre class="prettyprint"><code>#ruby
+execute "my-important-file" do
+  command "cp -Rf /vagrant/. #{node['drupal-camp']['the-directory']}/"
+  creates node['drupal-camp']['the-directory'] + "/foo.txt"
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2><img src="resources/img/chef-logo.png" style="display:inline; vertical-align:middle; margin:0;" height="150px;"/>Attributes</h2>
+
+<ul>
+<li class="slide">key value pairs: <code>"mysql_root_password" =&gt; "secret"</code></li>
+<li class="slide">values can be hashes themselves: <code>node['drupal']['version']</code></li>
+<li class="slide">values can be arrays: <code>["80" , "8000"]</code></li>
+<li class="slide">who sets a node's attributes for a Chef run?
+<ul>
+<li class="slide">attribute files</li>
+<li class="slide">run-time specified json file</li>
+<li class="slide">roles &amp; environments</li>
+</ul></li>
+<li class="slide">precedence levels
+n--end--n</li>
+</ul>
+
+<h3>a simple template</h3>
+
+<pre class="prettyprint"><code>#ruby
+# in some recipe:
+template "/usr/local/bin/foo.sh" do
+  source "my_template.sh.erb"
+  mode 0755
+  owner "root"
+  group "root"
+  variables({
+    'user' =&gt; 'www-data',
+    'group'=&gt; 'sysadmin'
+  })
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h3>a simple template</h3>
+
+<pre class="prettyprint"><code>#bash
+# /usr/local/bin/foo.sh 
+
+#! /bin/bash
+# script generated by Chef
+chown www-data:sysadmin /var/www
+</code></pre>
+
+<div></div>
+
+<pre class="prettyprint"><code>#bash
+# templates/default/my_template.sh.erb
+#! /bin/bash
+# script generated by Chef
+chown &lt;%= @user %&gt;:&lt;%= @group %&gt; /var/www
+</code></pre>
+
+<p>n--end--n</p>
+
+<p><img src="resources/img/chef-logo.png"  style="float:left;margin:2em;" height="400px"/>
+  <img src="resources/img/drupal.png"     style="float:left;margin:2em;" height="400px"/>
+n--end--n</p>
+
+<h3>Platform configuration</h3>
+
+<ul>
+<li class="slide">HTTP Server</li>
+<li class="slide">Database</li>
+<li class="slide">PHP</li>
+<li class="slide">APC, memcached, Search, Reverse Proxy, Firewall, ...</li>
+</ul>
+
+<h3>Drupal configuration</h3>
+
+<ul>
+<li class="slide">download Drupal/codebase</li>
+<li class="slide">prepare database</li>
+<li class="slide">run the installation script <em>or</em> populate the database</li>
+<li class="slide">setup cron</li>
+<li class="slide">manage modules
+n--end--n
+<h2>Our Drupal cookbooks</h2></li>
+</ul>
+
+<h3>deploy-drupal</h3>
+
+<p><a href="http://github.com/evolvingweb/chef-deploy-drupal">github.com/evolvingweb/chef-deploy-drupal</a></p>
+
+<h3>drupal-solr</h3>
+
+<p><a href="http://github.com/evolvingweb/chef-drupal-solr">github.com/evolvingweb/chef-drupal-solr</a></p>
+
+<p>n--end--n</p>
+
+<h2>Cookbook Structure</h2>
+
+<p><img src="resources/img/structure.png" alt="structure" title="" />
+n--end--n</p>
+
+<h2><code>metadata.rb</code></h2>
+
+<pre class="prettyprint"><code>#ruby    
+name    "deploy-drupal"
+# [maintainer and license info]
+depends "apt"
+depends "build-essential"
+depends "git"
+depends "curl"
+depends "apache2"
+depends "php"
+depends "memcached"
+depends "drush"
+depends "mysql"
+depends "xhprof"
+depends "nginx"
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2><code>recipes/default.rb</code></h2>
+
+<pre class="prettyprint"><code>#ruby
+## Cookbook Name:: deploy-drupal
+## Recipe:: default
+
+include_recipe 'deploy-drupal::dependencies'
+include_recipe 'deploy-drupal::apc'
+include_recipe 'deploy-drupal::download_drupal'
+include_recipe 'deploy-drupal::get_project'
+include_recipe 'deploy-drupal::install'
+</code></pre>
+
+<p>n--end--n</p>
+
+<h3>Some Attributes</h3>
+
+<pre class="prettyprint"><code>#ruby
+default['deploy-drupal']['get_project']['git_repo'] = 'git://server:repo.git'
+default['deploy-drupal']['get_project']['git_branch'] = 'master'
+
+# user group owning drupal codebase files
+default['deploy-drupal']['dev_group'] = 'root'
+
+default['deploy-drupal']['project_name'] = 'cooked.drupal'  
+
+# absolute path to project directory
+default['deploy-drupal']['project_root'] = 
+  "/var/shared/sites/#{node['deploy-drupal']['project_name']}"
+
+default['deploy-drupal']['drupal_root'] = "#{node['deploy-drupal']['project_root']}/site"
+</code></pre>
+
+<p>n--end--n</p>
+
+<h3><code>recipes/get_project.rb</code></h3>
+
+<pre class="prettyprint"><code>#ruby
+# creates /var/shared/sites/cooked.drupal
+directory node['deploy-drupal']['project_root'] do
+  group node['deploy-drupal']['dev_group']
+  recursive true
+end
+
+project = node['deploy-drupal']['project_root']
+url = node['deploy-drupal']['get_project']['git_repo']
+branch  = node['deploy-drupal']['get_project']['git_branch']
+
+gitclone = "git clone #{url} #{project}" 
+  # git clone git://server:repo.git cooked.drupal 
+gitcheckout = "cd #{project}; git checkout #{branch}"
+  # cd cooked.drupal; git checkout master
+
+# clone git repo and checkout branch
+execute "get-project-from-git" do
+  command "#{gitclone}; #{gitcheckout}"
+  group node['deploy-drupal']['dev_goup']
+  creates node['deploy-drupal']['drupal_root'] + "/index.php"
+  not_if { node['deploy-drupal']['get_project']['git_repo'].empty? }
+  notifies :restart, "service[apache2]"
+end
+</code></pre>
+
+<p>n--end--n</p>
+
+<h2>Attributes</h2>
+
+<p><img src="resources/img/structure.png" alt="structure" title="" />
+n--end--n</p>
+
+<h2>Attributes</h2>
+
+<p>Attributes tell you a lot about what a cookbook does!</p>
+
+<pre class="prettyprint"><code>#ruby
+# attributes/install.rb
+#
+# MySQL credentials
+default['deploy-drupal']['install']['db_user'] = 'drupal_user'
+default['deploy-drupal']['install']['db_pass'] = 'drupal_pass'
+default['deploy-drupal']['install']['db_name'] = 'drupal_db'
+
+# Drupal user one
+default['deploy-drupal']['install']['admin_user'] = 'admin'
+default['deploy-drupal']['install']['admin_pass'] = 'admin_pass'
+
+# path to sql dump file (can be .sql.gz) to populate the database
+# can be absolute or relative to project root
+default['deploy-drupal']['install']['sql_dump'] = ''
+# path to bash script file to be executed after installation
+# can be absolute or relative to project root
+default['deploy-drupal']['install']['script'] = ''
+</code></pre>
+
+<p>n--end--n</p>
+
+<h3>Who uses all these attributes?</h3>
+
+<pre class="prettyprint"><code>#ruby
+#recipes/install.rb
+mysql_connection = "mysql --user='root' --host='localhost' \
+                          --password='#{node['mysql']['server_root_password']}'"
+db_user = "'#{node['deploy-drupal']['install']['db_user']}'@'localhost'"
+db_pass = node['deploy-drupal']['install']['db_pass']
+db_name = node['deploy-drupal']['install']['db_name']
+grant_sql = "GRANT ALL ON #{db_name}.* TO #{db_user} IDENTIFIED BY '#{db_pass}';"
+# GRANT ALL ON drupal.* to 'drupal_user'@'localhost' IDENTIFIED BY 'db_pass';
+
+bash "prepare-mysql" do
+  code &lt;&lt;-EOH
+    #{mysql_connection} -e "#{grant_sql}; FLUSH PRIVILEGES;"
+    #{mysql_connection} -e "CREATE DATABASE IF NOT EXISTS #{db_name};"
+  EOH 
+end
+# mysql --user='root' --host='localhost' --password='root' -e "GRANT ALL ON  ..."
+</code></pre>
+
+<p>n--end--n</p>
+
+<h3>What has been automated?</h3>
+
+<ul>
+<li class="slide">Zero to Live: Drupal 6 <em>and</em> 7</li>
+<li class="slide">Code Source can be: 
+<ul>
+<li class="slide">drupal.org <em>or</em> git repo <em>or</em> filesystem</li>
+</ul></li>
+<li class="slide">Database can be populated from: 
+<ul>
+<li class="slide">database dump <em>or</em> install schema via drush</li>
+</ul></li>
+<li class="slide">Solr search integration:
+<ul>
+<li class="slide">Install Tomcat and Solr,</li>
+<li class="slide">Install Drupal Solr search module,</li>
+<li class="slide">Index Drupal data</li>
+</ul></li>
+<li class="slide"><p>Production Site considerations:</p>
+
+<ul>
+<li class="slide">Firewall configuration</li>
+<li class="slide">Nginx Reverse proxy</li>
+<li class="slide">Add custom post-provisioning script
+n--end--n
+<h2>Review</h2></li>
+</ul></li>
+<li class="slide"><p>Infrastructure Automation</p></li>
+<li class="slide">Virtualization Technologies and Vagrant</li>
+<li class="slide">Chef and how it works</li>
+<li class="slide">Deploying Drupal with Chef
+n--end--n
+<h1>Questions?</h1></li>
+</ul>
+</section>
+<!-- End slides. -->
+
+
+<!-- Begin extension snippets. Add or remove as needed. -->
+
+<!-- deck.navigation snippet -->
+<a href="resources/#" class="deck-prev-link" title="Previous">&#8592;</a>
+<a href="resources/#" class="deck-next-link" title="Next">&#8594;</a>
+
+<!-- deck.status snippet -->
+<p class="deck-status">
+	<span class="deck-status-current"></span>
+	/
+	<span class="deck-status-total"></span>
+</p>
+
+<!-- deck.goto snippet -->
+<form action="." method="get" class="goto-form">
+	<label for="goto-slide">Go to slide:</label>
+	<input type="text" name="slidenum" id="goto-slide" list="goto-datalist">
+	<datalist id="goto-datalist"></datalist>
+	<input type="submit" value="Go">
+</form>
+
+<!-- deck.hash snippet -->
+<a href="resources/." title="Permalink to this slide" class="deck-permalink">#</a>
+
+<!-- End extension snippets. -->
+
+
+<!-- Required JS files. -->
+<script src="resources/deck.js/jquery-1.7.2.min.js"></script>
+<script src="resources/deck.js/core/deck.core.js"></script>
+
+<!-- Extension JS files. Add or remove as needed. -->
+<script src="resources/deck.js/core/deck.core.js"></script>
+<script src="resources/deck.js/extensions/hash/deck.hash.js"></script>
+<script src="resources/deck.js/extensions/menu/deck.menu.js"></script>
+<script src="resources/deck.js/extensions/goto/deck.goto.js"></script>
+<script src="resources/deck.js/extensions/status/deck.status.js"></script>
+<script src="resources/deck.js/extensions/navigation/deck.navigation.js"></script>
+<script src="resources/deck.js/extensions/scale/deck.scale.js"></script>
+
+<!-- Initialize the deck. You can put this in an external file if desired. -->
+<script>
+	$(function() {
+		$.deck('.slide');
+	});
+</script>
+<script src="resources/google-code-prettify/src/run_prettify.js"></script>
+</body></html>
